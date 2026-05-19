@@ -694,22 +694,6 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════ LOGIN SCREEN ═══════════════════════ -->
-<div class="login-overlay" id="login-overlay">
-    <div class="login-box">
-        <div class="login-icon">🌿</div>
-        <h2>Homeopathy Finder</h2>
-        <p class="login-subtitle">Sign in to continue</p>
-        <div class="login-error" id="login-error"></div>
-        <input type="text" id="login-user" placeholder="Username" autocomplete="off" />
-        <input type="password" id="login-pass" placeholder="Password" />
-        <button class="btn btn-primary" onclick="doLogin()">Sign In</button>
-        <div class="login-hint">
-            <strong>Admin:</strong> admin / admin &nbsp;·&nbsp; <strong>View only:</strong> guest / guest
-        </div>
-    </div>
-</div>
-
 <!-- ═══════════════════════════════ HEADER ══════════════════════════════ -->
 <header>
     <div class="header-inner">
@@ -718,9 +702,7 @@
         <p>Your personal medicine reference guide</p>
     </div>
     <div class="header-settings">
-        <span class="user-badge" id="user-badge"></span>
         <button class="icon-btn" onclick="openSettings()">⚙️ Settings</button>
-        <button class="logout-btn" onclick="doLogout()">Logout</button>
     </div>
 </header>
 
@@ -1460,92 +1442,9 @@ function loadSampleData(force) {
     }
 }
 
-/* ─────────────────────────── AUTH LAYER ──────────────────────────────── */
-const USERS = {
-    admin: { password: 'admin', role: 'admin' },
-    guest: { password: 'guest', role: 'guest' }
-};
-
-function getCurrentUser() {
-    try {
-        return JSON.parse(sessionStorage.getItem('homeopathy_user'));
-    } catch(e) { return null; }
-}
-
-function isAdmin() {
-    const u = getCurrentUser();
-    return u && u.role === 'admin';
-}
-
-function doLogin() {
-    const user = document.getElementById('login-user').value.trim().toLowerCase();
-    const pass = document.getElementById('login-pass').value;
-    const errEl = document.getElementById('login-error');
-
-    if (!user || !pass) {
-        errEl.textContent = 'Please enter username and password.';
-        return;
-    }
-
-    const account = USERS[user];
-    if (!account || account.password !== pass) {
-        errEl.textContent = 'Invalid username or password.';
-        document.getElementById('login-pass').value = '';
-        return;
-    }
-
-    sessionStorage.setItem('homeopathy_user', JSON.stringify({ username: user, role: account.role }));
-    applyAuth();
-}
-
-function doLogout() {
-    sessionStorage.removeItem('homeopathy_user');
-    document.getElementById('login-user').value = '';
-    document.getElementById('login-pass').value = '';
-    document.getElementById('login-error').textContent = '';
-    document.getElementById('login-overlay').classList.remove('hidden');
-}
-
-// Enter key to submit login
-document.getElementById('login-pass').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') doLogin();
-});
-document.getElementById('login-user').addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') document.getElementById('login-pass').focus();
-});
-
-function applyAuth() {
-    const user = getCurrentUser();
-    if (!user) {
-        document.getElementById('login-overlay').classList.remove('hidden');
-        return;
-    }
-
-    // Hide login
-    document.getElementById('login-overlay').classList.add('hidden');
-
-    // Update user badge
-    const badge = document.getElementById('user-badge');
-    badge.textContent = user.role === 'admin' ? '👤 Admin' : '👁️ Guest';
-
-    // Show/hide Add tab based on role
-    const addTab = document.querySelectorAll('.nav-tab')[0];
-    const addContent = document.getElementById('tab-add');
-
-    if (user.role !== 'admin') {
-        addTab.style.display = 'none';
-        addContent.classList.remove('active');
-        // Switch to symptom tab if on add tab
-        switchTab('symptom');
-    } else {
-        addTab.style.display = '';
-    }
-}
-
 /* ──────────────────────────── INIT ─────────────────────────────────── */
 loadSampleData(false);
 updateStats();
-applyAuth();
 
 // Auto-pull from cloud on first load if connected and local is empty
 (function autoLoadFromCloud() {
