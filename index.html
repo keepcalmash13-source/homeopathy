@@ -4,295 +4,703 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Homeopathy Medicine Finder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg:        #f4f7f5;
+            --surface:   #ffffff;
+            --primary:   #16a34a;
+            --primary-d: #15803d;
+            --primary-l: #dcfce7;
+            --primary-xl:#f0fdf4;
+            --accent:    #059669;
+            --text:      #1e293b;
+            --text-m:    #475569;
+            --text-l:    #94a3b8;
+            --border:    #e2e8f0;
+            --danger:    #dc2626;
+            --danger-bg: #fef2f2;
+            --warn:      #d97706;
+            --warn-bg:   #fffbeb;
+            --info:      #2563eb;
+            --info-bg:   #eff6ff;
+            --radius:    16px;
+            --radius-sm: 10px;
+            --shadow:    0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lg: 0 4px 24px rgba(0,0,0,0.08), 0 12px 48px rgba(0,0,0,0.04);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: #f1f8f1;
-            color: #2d4a2d;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
         /* ── HEADER ─────────────────────────────────────────────── */
         header {
-            background: linear-gradient(135deg, #1b5e20, #388e3c);
+            position: relative;
+            background: linear-gradient(135deg, #065f46 0%, #16a34a 50%, #22c55e 100%);
             color: white;
-            padding: 22px 24px 18px;
+            padding: 32px 24px 28px;
             text-align: center;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+            overflow: hidden;
         }
-        header h1 { font-size: 1.75em; letter-spacing: 0.5px; }
-        header p  { font-size: 0.9em; opacity: 0.85; margin-top: 4px; }
-
-        .header-settings {
+        header::before {
+            content: '';
             position: absolute;
-            top: 18px;
-            right: 18px;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #a7f3d0, #34d399, #10b981, #059669);
+        }
+        .header-inner { position: relative; z-index: 1; }
+        .header-icon {
+            width: 56px; height: 56px;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(8px);
+            border-radius: 16px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.7em;
+            margin-bottom: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        header h1 {
+            font-size: 1.65em; font-weight: 800;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        header p {
+            font-size: 0.88em;
+            margin-top: 6px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+        .header-settings {
+            position: absolute; top: 20px; right: 20px; z-index: 2;
         }
         .icon-btn {
-            background: rgba(255,255,255,0.18);
-            border: none;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
             color: white;
-            padding: 7px 12px;
-            border-radius: 8px;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 0.85em;
-            transition: background 0.2s;
+            font-size: 0.82em;
+            font-weight: 500;
+            font-family: inherit;
+            transition: all 0.2s;
         }
-        .icon-btn:hover { background: rgba(255,255,255,0.32); }
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.22);
+            transform: translateY(-1px);
+        }
 
         /* ── NAV TABS ────────────────────────────────────────────── */
         .nav-tabs {
             display: flex;
-            background: #145214;
-            overflow-x: auto;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            overflow-x: auto;
         }
         .nav-tab {
             flex: 1;
-            padding: 13px 8px;
+            padding: 14px 10px 12px;
             text-align: center;
             cursor: pointer;
-            color: #a5d6a7;
-            font-size: 0.88em;
+            color: var(--text-l);
+            font-size: 0.82em;
+            font-weight: 600;
             border-bottom: 3px solid transparent;
             white-space: nowrap;
-            min-width: 80px;
-            transition: all 0.2s;
+            min-width: 90px;
+            transition: all 0.25s ease;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
         }
-        .nav-tab:hover { background: #1b5e20; color: #fff; }
+        .nav-tab .tab-icon {
+            font-size: 1.25em;
+            line-height: 1;
+        }
+        .nav-tab:hover {
+            color: var(--primary);
+            background: var(--primary-xl);
+        }
         .nav-tab.active {
-            background: #f1f8f1;
-            color: #1b5e20;
-            font-weight: 700;
-            border-bottom: 3px solid #43a047;
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: var(--primary-xl);
         }
 
         /* ── CONTENT ─────────────────────────────────────────────── */
-        .tab-content { display: none; padding: 24px 18px; max-width: 820px; margin: 0 auto; }
+        .tab-content {
+            display: none;
+            padding: 24px 16px 40px;
+            max-width: 860px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
+        }
         .tab-content.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
 
         /* ── CARDS ───────────────────────────────────────────────── */
         .card {
-            background: white;
-            border-radius: 14px;
-            padding: 24px;
-            margin-bottom: 18px;
-            box-shadow: 0 2px 10px rgba(0,80,0,0.09);
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 28px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
         }
         .card h2 {
-            color: #1b5e20;
-            margin-bottom: 18px;
-            font-size: 1.15em;
+            color: var(--text);
+            margin-bottom: 22px;
+            font-size: 1.12em;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .card h2 .card-icon {
+            width: 36px; height: 36px;
+            background: var(--primary-l);
+            border-radius: var(--radius-sm);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1em;
+            flex-shrink: 0;
         }
 
         /* ── FORM ELEMENTS ───────────────────────────────────────── */
         label {
             display: block;
             font-weight: 600;
-            margin-bottom: 7px;
-            color: #2e6b2e;
-            font-size: 0.93em;
+            margin-bottom: 6px;
+            color: var(--text);
+            font-size: 0.88em;
         }
         input[type="text"],
         input[type="number"],
         textarea {
             width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #c8e6c9;
-            border-radius: 9px;
-            font-size: 1em;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95em;
             font-family: inherit;
-            margin-bottom: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background: #fafffe;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+            background: var(--bg);
+            color: var(--text);
+        }
+        input::placeholder, textarea::placeholder {
+            color: var(--text-l);
         }
         input[type="text"]:focus,
         input[type="number"]:focus,
         textarea:focus {
-            border-color: #43a047;
+            border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(67,160,71,0.15);
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+            background: white;
         }
-        textarea { min-height: 80px; resize: vertical; }
+        textarea { min-height: 90px; resize: vertical; }
         .hint {
-            font-size: 0.82em;
-            color: #999;
-            margin-top: -10px;
-            margin-bottom: 14px;
+            font-size: 0.78em;
+            color: var(--text-l);
+            margin-top: -12px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* ── BUTTONS ─────────────────────────────────────────────── */
         .btn {
-            padding: 12px 28px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 11px 24px;
             border: none;
-            border-radius: 9px;
-            font-size: 0.97em;
+            border-radius: var(--radius-sm);
+            font-size: 0.9em;
             font-family: inherit;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
+            user-select: none;
         }
-        .btn-primary   { background: #43a047; color: white; }
-        .btn-primary:hover   { background: #2e7d32; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,100,0,0.25); }
-        .btn-secondary { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
-        .btn-secondary:hover { background: #c8e6c9; }
-        .btn-danger    { background: #ffebee; color: #c62828; border: 2px solid #ef9a9a; }
-        .btn-danger:hover { background: #ffcdd2; }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 1px 3px rgba(22,163,74,0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-d);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+        }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text-m);
+            border: 1.5px solid var(--border);
+        }
+        .btn-secondary:hover {
+            background: var(--border);
+            color: var(--text);
+        }
+        .btn-danger {
+            background: var(--danger-bg);
+            color: var(--danger);
+            border: 1.5px solid #fecaca;
+        }
+        .btn-danger:hover {
+            background: #fecaca;
+        }
 
         /* ── ALERTS ──────────────────────────────────────────────── */
         .alert {
-            padding: 12px 15px;
-            border-radius: 9px;
-            margin-bottom: 16px;
-            font-size: 0.93em;
-            line-height: 1.5;
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 18px;
+            font-size: 0.88em;
+            line-height: 1.6;
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            animation: slideDown 0.3s ease;
         }
-        .alert-success { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #a5d6a7; }
-        .alert-error   { background: #ffebee; color: #b71c1c; border: 1.5px solid #ef9a9a; }
-        .alert-info    { background: #e3f2fd; color: #0d47a1; border: 1.5px solid #90caf9; }
-        .alert-warn    { background: #fff8e1; color: #e65100; border: 1.5px solid #ffe082; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .alert-icon { font-size: 1.2em; flex-shrink: 0; line-height: 1.4; }
+        .alert-success { background: var(--primary-l); color: #166534; border: 1px solid #a7f3d0; }
+        .alert-error   { background: var(--danger-bg); color: #991b1b; border: 1px solid #fecaca; }
+        .alert-info    { background: var(--info-bg); color: #1e40af; border: 1px solid #bfdbfe; }
+        .alert-warn    { background: var(--warn-bg); color: #92400e; border: 1px solid #fde68a; }
 
         /* ── STATS BAR ───────────────────────────────────────────── */
-        .stats-bar   { display: flex; gap: 14px; margin-bottom: 4px; }
-        .stat-card   {
-            flex: 1; background: white; border-radius: 12px;
-            padding: 16px 10px; text-align: center;
-            box-shadow: 0 2px 8px rgba(0,80,0,0.09);
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
         }
-        .stat-card .num   { font-size: 2em; font-weight: 700; color: #2e7d32; }
-        .stat-card .slabel { font-size: 0.78em; color: #888; margin-top: 4px; }
+        .stat-card {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 20px 14px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        .stat-icon {
+            width: 42px; height: 42px;
+            background: var(--primary-l);
+            border-radius: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .stat-card .num {
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: -1px;
+        }
+        .stat-card .slabel {
+            font-size: 0.72em;
+            color: var(--text-l);
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
         /* ── MEDICINE RESULT CARDS ───────────────────────────────── */
         .medicine-card {
-            background: white;
-            border: 2px solid #c8e6c9;
-            border-radius: 11px;
-            padding: 16px 18px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 22px;
+            margin-bottom: 14px;
+            transition: all 0.25s ease;
         }
         .medicine-card:hover {
-            border-color: #43a047;
-            box-shadow: 0 4px 14px rgba(0,100,0,0.12);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
         }
-        .med-header   { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .med-number   {
-            display: inline-flex; align-items: center; justify-content: center;
-            background: #388e3c; color: white;
-            min-width: 38px; height: 38px; border-radius: 50%;
-            font-weight: 700; font-size: 0.95em; flex-shrink: 0;
-            padding: 0 5px;
+        .med-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 14px;
         }
-        .med-name     { font-size: 1.08em; font-weight: 700; color: #1b5e20; }
-        .symptom-tag  {
+        .med-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            min-width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95em;
+            flex-shrink: 0;
+            padding: 0 6px;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+        }
+        .med-name {
+            font-size: 1.05em;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .med-symptoms-label {
+            font-size: 0.72em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-l);
+            margin-bottom: 8px;
+        }
+        .symptom-tag {
             display: inline-block;
-            background: #e8f5e9; color: #2e7d32;
-            padding: 3px 10px; border-radius: 20px;
-            font-size: 0.8em; margin: 2px;
-            border: 1px solid #c8e6c9;
+            background: var(--bg);
+            color: var(--text-m);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.78em;
+            font-weight: 500;
+            margin: 3px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+        .symptom-tag:hover {
+            background: var(--primary-l);
+            border-color: #a7f3d0;
+            color: #166534;
         }
         .symptom-tag.match {
-            background: #fff3e0; border-color: #ff9800;
-            color: #e65100; font-weight: 600;
+            background: #fef3c7;
+            border-color: #fcd34d;
+            color: #92400e;
+            font-weight: 600;
         }
 
         /* ── SEARCH RESULT PANEL ─────────────────────────────────── */
         .search-result-panel {
-            background: white;
-            border-radius: 14px;
-            padding: 22px;
-            box-shadow: 0 2px 10px rgba(0,80,0,0.09);
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 26px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .result-summary {
+            color: var(--text-m);
+            font-size: 0.9em;
+            margin-bottom: 6px;
         }
         .numbers-display {
-            background: #e8f5e9;
-            border-radius: 10px;
-            padding: 14px 16px;
-            margin: 12px 0;
+            background: linear-gradient(135deg, var(--primary-xl), var(--primary-l));
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            margin: 16px 0;
             text-align: center;
+            border: 1px solid #a7f3d0;
         }
         .numbers-display .label {
-            font-size: 0.82em; color: #666; margin-bottom: 8px;
+            font-size: 0.72em;
+            color: var(--text-l);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
         }
         .num-badge {
-            display: inline-block;
-            background: #388e3c; color: white;
-            padding: 6px 16px; border-radius: 22px;
-            margin: 3px; cursor: pointer;
-            font-weight: 700; font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 24px;
+            margin: 4px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.92em;
             transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(22,163,74,0.25);
         }
-        .num-badge:hover { background: #1b5e20; transform: scale(1.06); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .num-badge:hover {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.35);
+        }
+        .matched-symptoms-info {
+            font-size: 0.78em;
+            color: var(--text-l);
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
 
         /* ── ALL MEDICINES ───────────────────────────────────────── */
         .alpha-letter {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 50%;
-            background: #2e7d32; color: white;
-            font-weight: 700; font-size: 1.05em;
-            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            font-weight: 700;
+            font-size: 1em;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.2);
         }
-        .alpha-group { margin-bottom: 22px; }
+        .alpha-group { margin-bottom: 28px; }
+        .all-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 18px 22px;
+            background: var(--surface);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .all-header-icon {
+            width: 44px; height: 44px;
+            background: var(--primary-l);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+        .all-header-text strong {
+            font-size: 1.05em;
+            color: var(--text);
+        }
+        .all-header-text span {
+            font-size: 0.82em;
+            color: var(--text-l);
+        }
 
         /* ── EMPTY STATE ─────────────────────────────────────────── */
         .empty-state {
-            text-align: center; padding: 40px 20px; color: #aaa;
+            text-align: center;
+            padding: 50px 24px;
+            color: var(--text-l);
         }
-        .empty-state .icon { font-size: 3em; margin-bottom: 10px; }
-        .empty-state p { margin-bottom: 6px; }
+        .empty-state .icon {
+            font-size: 3.2em;
+            margin-bottom: 14px;
+            opacity: 0.6;
+        }
+        .empty-state p {
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
 
         /* ── SETTINGS MODAL ──────────────────────────────────────── */
         .modal-overlay {
             display: none;
-            position: fixed; top: 0; left: 0;
+            position: fixed;
+            top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
+            background: rgba(15,23,42,0.55);
+            backdrop-filter: blur(6px);
             z-index: 1000;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
         }
         .modal-overlay.open { display: flex; }
         .modal-box {
-            background: white; border-radius: 16px;
-            padding: 28px; max-width: 560px; width: 92%;
-            max-height: 80vh; overflow-y: auto;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            background: var(--surface);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 560px;
+            width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+            animation: modalPop 0.3s ease;
         }
-        .modal-box h3 { color: #1b5e20; margin-bottom: 18px; font-size: 1.1em; }
-        .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        @keyframes modalPop {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-box h3 {
+            color: var(--text);
+            margin-bottom: 22px;
+            font-size: 1.15em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
         .data-textarea {
-            width: 100%; height: 160px; font-size: 0.82em;
+            width: 100%;
+            height: 150px;
+            font-size: 0.78em;
             font-family: 'Courier New', monospace;
-            border: 2px solid #c8e6c9; border-radius: 8px; padding: 10px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
             resize: vertical;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* ── CLOUD SYNC STATUS ────────────────────────────────────── */
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.82em;
+            font-weight: 500;
+            margin-bottom: 14px;
+        }
+        .sync-connected {
+            background: var(--primary-l);
+            color: #166534;
+            border: 1px solid #a7f3d0;
+        }
+        .sync-disconnected {
+            background: var(--warn-bg);
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .sync-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .sync-dot.on  { background: #16a34a; box-shadow: 0 0 6px rgba(22,163,74,0.5); }
+        .sync-dot.off { background: #d97706; }
+        .cloud-section {
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            margin-bottom: 16px;
+        }
+        .cloud-section h4 {
+            font-size: 0.92em;
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sync-spinner {
+            display: inline-block;
+            width: 14px; height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .sync-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--primary);
+            z-index: 9999;
+            animation: syncPulse 1.5s ease-in-out infinite;
+            display: none;
+        }
+        .sync-bar.active { display: block; }
+        @keyframes syncPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
         }
 
         /* ── DIVIDER ─────────────────────────────────────────────── */
         hr.divider {
-            border: none; border-top: 1px solid #e8f5e9; margin: 16px 0;
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 18px 0;
         }
+
+        /* ── SCROLLBAR ───────────────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* ── RESPONSIVE ──────────────────────────────────────────── */
         @media (max-width: 540px) {
-            .stats-bar { gap: 8px; }
-            .stat-card { padding: 12px 6px; }
-            .stat-card .num { font-size: 1.6em; }
-            header h1 { font-size: 1.4em; }
-            .header-settings { top: 14px; right: 10px; }
+            .stats-bar { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .stat-card { padding: 14px 8px; }
+            .stat-card .num { font-size: 1.55em; }
+            .stat-icon { width: 34px; height: 34px; font-size: 1em; }
+            header { padding: 24px 18px 22px; }
+            header h1 { font-size: 1.35em; }
+            .header-icon { width: 44px; height: 44px; font-size: 1.4em; }
+            .tab-content { padding: 18px 14px 32px; }
+            .card { padding: 22px 18px; }
+            .modal-actions { grid-template-columns: 1fr; }
+            .header-settings { top: 14px; right: 12px; }
+            .icon-btn { padding: 6px 10px; font-size: 0.78em; }
+            .nav-tab { font-size: 0.75em; padding: 12px 6px 10px; }
         }
     </style>
 </head>
 <body>
 
 <!-- ═══════════════════════════════ HEADER ══════════════════════════════ -->
-<header style="position:relative;">
-    <h1>🌿 Homeopathy Medicine Finder</h1>
-    <p>Your personal homeopathy reference guide</p>
+<header>
+    <div class="header-inner">
+        <div class="header-icon">🌿</div>
+        <h1>Homeopathy Finder</h1>
+        <p>Your personal medicine reference guide</p>
+    </div>
     <div class="header-settings">
         <button class="icon-btn" onclick="openSettings()">⚙️ Settings</button>
     </div>
@@ -300,10 +708,18 @@
 
 <!-- ═══════════════════════════════ NAV ══════════════════════════════════ -->
 <div class="nav-tabs" id="nav-tabs">
-    <div class="nav-tab active"  onclick="switchTab('add')">➕ Add Medicine</div>
-    <div class="nav-tab"         onclick="switchTab('symptom')">🔍 Find by Symptom</div>
-    <div class="nav-tab"         onclick="switchTab('number')">💊 Find by Number</div>
-    <div class="nav-tab"         onclick="switchTab('all')">📋 All Medicines</div>
+    <div class="nav-tab active" onclick="switchTab('add')">
+        <span class="tab-icon">➕</span>Add
+    </div>
+    <div class="nav-tab" onclick="switchTab('symptom')">
+        <span class="tab-icon">🔍</span>Symptom
+    </div>
+    <div class="nav-tab" onclick="switchTab('number')">
+        <span class="tab-icon">💊</span>Number
+    </div>
+    <div class="nav-tab" onclick="switchTab('all')">
+        <span class="tab-icon">📋</span>View All
+    </div>
 </div>
 
 <!-- ════════════════════════ TAB 1 — ADD MEDICINE ════════════════════════ -->
@@ -312,24 +728,27 @@
     <div class="stats-bar" id="stats-bar"></div>
 
     <div class="card">
-        <h2>➕ Add / Update Medicine</h2>
+        <h2>
+            <span class="card-icon">➕</span>
+            Add / Update Medicine
+        </h2>
 
         <div id="add-alert"></div>
 
         <label for="med-name">Medicine Name</label>
         <input type="text" id="med-name"
                placeholder="e.g. Arnica Montana"
-               oninput="onMedicineNameInput()" />
+               oninput="onMedicineNameInput()" autocomplete="off" />
         <div id="existing-info"></div>
 
-        <label for="med-symptoms">Symptoms <span style="font-weight:400;color:#aaa">(comma-separated)</span></label>
+        <label for="med-symptoms">Symptoms <span style="font-weight:400;color:var(--text-l)">(comma-separated)</span></label>
         <textarea id="med-symptoms"
                   placeholder="e.g. bruises, muscle pain, swelling, trauma, shock"></textarea>
-        <div class="hint">💡 Separate symptoms with commas. If the medicine already exists, new symptoms will be added to it.</div>
+        <div class="hint">💡 Separate each symptom with a comma. Existing medicine? New symptoms are added automatically.</div>
 
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="btn btn-primary"   onclick="addMedicine()">💾 Save Medicine</button>
-            <button class="btn btn-secondary" onclick="clearForm()">🗑️ Clear</button>
+            <button class="btn btn-primary" onclick="addMedicine()">Save Medicine</button>
+            <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
         </div>
     </div>
 </div>
@@ -337,12 +756,15 @@
 <!-- ════════════════════════ TAB 2 — FIND BY SYMPTOM ═════════════════════ -->
 <div id="tab-symptom" class="tab-content">
     <div class="card">
-        <h2>🔍 Search by Symptom</h2>
+        <h2>
+            <span class="card-icon">🔍</span>
+            Search by Symptom
+        </h2>
         <label for="symptom-input">Enter Symptom Name</label>
         <input type="text" id="symptom-input"
                placeholder="e.g. fever, headache, cough, rash…"
-               oninput="searchBySymptom()" />
-        <div class="hint">💡 You can type part of a symptom name — partial matches are shown.</div>
+               oninput="searchBySymptom()" autocomplete="off" />
+        <div class="hint">💡 Partial matches work — type at least 2 characters</div>
     </div>
     <div id="symptom-results"></div>
 </div>
@@ -350,12 +772,15 @@
 <!-- ════════════════════════ TAB 3 — FIND BY NUMBER ══════════════════════ -->
 <div id="tab-number" class="tab-content">
     <div class="card">
-        <h2>💊 Find Medicine by Number</h2>
+        <h2>
+            <span class="card-icon">💊</span>
+            Find Medicine by Number
+        </h2>
         <label for="number-input">Enter Medicine Number</label>
         <input type="text" id="number-input"
                placeholder="e.g. 1, 2, 3…"
-               oninput="searchByNumber()" />
-        <div class="hint">💡 Enter the medicine number shown in symptom search results.</div>
+               oninput="searchByNumber()" autocomplete="off" />
+        <div class="hint">💡 Enter the medicine number shown in symptom search results</div>
     </div>
     <div id="number-results"></div>
 </div>
@@ -365,20 +790,45 @@
     <div id="all-medicines-list"></div>
 </div>
 
+<!-- ═════════════════════ SYNC BAR (top of page) ════════════════════════ -->
+<div class="sync-bar" id="sync-bar"></div>
+
 <!-- ════════════════════════ SETTINGS MODAL ══════════════════════════════ -->
 <div class="modal-overlay" id="settings-modal" onclick="onModalOverlayClick(event)">
     <div class="modal-box">
-        <h3>⚙️ Settings & Data Management</h3>
+        <h3>⚙️ Settings & Data</h3>
+
+        <!-- ── CLOUD SYNC SECTION ── -->
+        <div class="cloud-section">
+            <h4>☁️ Cloud Sync (Google Sheets)</h4>
+            <div id="sync-status-display"></div>
+
+            <label for="sync-url">Google Apps Script URL</label>
+            <input type="text" id="sync-url"
+                   placeholder="https://script.google.com/macros/s/XXXX/exec"
+                   style="font-size:0.82em" />
+            <div class="hint">💡 See the setup guide file (google-apps-script.js) for instructions</div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="btn btn-primary" onclick="connectCloud()" id="btn-connect">🔗 Connect</button>
+                <button class="btn btn-secondary" onclick="cloudPush()" id="btn-push">⬆️ Push to Cloud</button>
+                <button class="btn btn-secondary" onclick="cloudPull()" id="btn-pull">⬇️ Pull from Cloud</button>
+                <button class="btn btn-danger" onclick="disconnectCloud()">✖️ Disconnect</button>
+            </div>
+            <div id="sync-alert" style="margin-top:10px"></div>
+        </div>
+
+        <hr class="divider">
 
         <div class="modal-actions">
-            <button class="btn btn-secondary" onclick="exportData()">📤 Export Data</button>
-            <button class="btn btn-secondary" onclick="showImportBox()">📥 Import Data</button>
-            <button class="btn btn-danger"    onclick="clearAllData()">🗑️ Clear All Data</button>
-            <button class="btn btn-secondary" onclick="loadSampleData(true)">🔄 Load Sample Data</button>
+            <button class="btn btn-secondary" onclick="exportData()">📤 Export JSON</button>
+            <button class="btn btn-secondary" onclick="showImportBox()">📥 Import JSON</button>
+            <button class="btn btn-danger" onclick="clearAllData()">🗑️ Clear All</button>
+            <button class="btn btn-secondary" onclick="loadSampleData(true)">🔄 Sample Data</button>
         </div>
 
         <div id="export-area" style="display:none">
-            <label>Your data (copy and save this somewhere safe):</label>
+            <label>Your data (copy and save somewhere safe):</label>
             <textarea class="data-textarea" id="export-text" readonly></textarea>
             <button class="btn btn-secondary" style="margin-top:8px"
                     onclick="copyExport()">📋 Copy to Clipboard</button>
@@ -394,7 +844,7 @@
         </div>
 
         <hr class="divider">
-        <button class="btn btn-secondary" onclick="closeSettings()">✖️ Close</button>
+        <button class="btn btn-secondary" style="width:100%" onclick="closeSettings()">Close</button>
     </div>
 </div>
 
@@ -415,6 +865,7 @@ function getDB() {
 
 function saveDB(db) {
     localStorage.setItem(DB_KEY, JSON.stringify(db));
+    autoCloudPush(); // auto-sync to cloud if connected
 }
 
 function findMedicineByName(db, name) {
@@ -432,13 +883,16 @@ function onMedicineNameInput() {
     const med = findMedicineByName(db, name);
     if (med) {
         infoBox.innerHTML = `
-            <div class="alert alert-info" style="margin-bottom:14px">
-                ℹ️ <strong>${escHtml(med.name)}</strong> already exists as
-                <strong>Medicine No. ${med.id}</strong>.
-                New symptoms you enter will be <em>added</em> to it.<br>
-                <small style="color:#555">Current symptoms:
-                    ${med.symptoms.map(s => `<em>${escHtml(s)}</em>`).join(', ')}
-                </small>
+            <div class="alert alert-info">
+                <span class="alert-icon">ℹ️</span>
+                <div>
+                    <strong>${escHtml(med.name)}</strong> already exists as
+                    <strong>Medicine No. ${med.id}</strong>.
+                    New symptoms will be <em>added</em> to it.<br>
+                    <small style="color:var(--text-l)">Current symptoms:
+                        ${med.symptoms.map(s => `<em>${escHtml(s)}</em>`).join(', ')}
+                    </small>
+                </div>
             </div>`;
     } else {
         infoBox.innerHTML = '';
@@ -454,12 +908,12 @@ function addMedicine() {
     const raw  = symEl.value.trim();
 
     if (!name) {
-        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Please enter a medicine name.</div>';
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Please enter a medicine name.</div></div>';
         nameEl.focus();
         return;
     }
     if (!raw) {
-        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Please enter at least one symptom.</div>';
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Please enter at least one symptom.</div></div>';
         symEl.focus();
         return;
     }
@@ -469,7 +923,7 @@ function addMedicine() {
         .filter(s => s.length > 0);
 
     if (symptoms.length === 0) {
-        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Could not read any valid symptoms.</div>';
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Could not read any valid symptoms.</div></div>';
         return;
     }
 
@@ -505,22 +959,25 @@ function addMedicine() {
     if (isNew) {
         alertEl.innerHTML = `
             <div class="alert alert-success">
-                ✅ <strong>${escHtml(name)}</strong> saved as
+                <span class="alert-icon">✅</span>
+                <div><strong>${escHtml(name)}</strong> saved as
                 <strong>Medicine No. ${medicineId}</strong>
-                with ${symptoms.length} symptom(s).
+                with ${symptoms.length} symptom(s).</div>
             </div>`;
     } else if (added.length > 0) {
         alertEl.innerHTML = `
             <div class="alert alert-success">
-                ✅ Added <strong>${added.length}</strong> new symptom(s) to
-                <strong>${escHtml(med.name)}</strong> (No. ${medicineId}).
+                <span class="alert-icon">✅</span>
+                <div>Added <strong>${added.length}</strong> new symptom(s) to
+                <strong>${escHtml(med.name)}</strong> (No. ${medicineId}).</div>
             </div>`;
     } else {
         alertEl.innerHTML = `
             <div class="alert alert-warn">
-                ℹ️ All entered symptoms were already mapped to
+                <span class="alert-icon">ℹ️</span>
+                <div>All entered symptoms were already mapped to
                 <strong>${escHtml(med.name)}</strong> (No. ${medicineId}).
-                Nothing new was added.
+                Nothing new added.</div>
             </div>`;
     }
 
@@ -540,16 +997,19 @@ function updateStats() {
     const totalSym = Object.keys(db.symptoms).length;
     document.getElementById('stats-bar').innerHTML = `
         <div class="stat-card">
+            <div class="stat-icon">💊</div>
             <div class="num">${totalMed}</div>
             <div class="slabel">Medicines</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon">🩺</div>
             <div class="num">${totalSym}</div>
-            <div class="slabel">Symptoms Mapped</div>
+            <div class="slabel">Symptoms</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon">🔢</div>
             <div class="num">${db.nextId - 1}</div>
-            <div class="slabel">Last Medicine No.</div>
+            <div class="slabel">Last No.</div>
         </div>`;
 }
 
@@ -576,41 +1036,40 @@ function searchBySymptom() {
                 <div class="empty-state">
                     <div class="icon">🔍</div>
                     <p>No medicines found for <strong>"${escHtml(query)}"</strong></p>
-                    <p style="font-size:0.85em">Try a shorter or different keyword</p>
+                    <p style="font-size:0.85em;color:var(--text-l)">Try a shorter or different keyword</p>
                 </div>
             </div>`;
         return;
     }
 
-    const sortedIds       = Array.from(matchedIds).sort((a, b) => a - b);
-    const numbersHtml     = sortedIds.map(id =>
+    const sortedIds     = Array.from(matchedIds).sort((a, b) => a - b);
+    const numbersHtml   = sortedIds.map(id =>
         `<span class="num-badge" onclick="goToNumber(${id})" title="Click to see details">No. ${id}</span>`
     ).join('');
-    const medicineCards   = sortedIds.map(id => {
+    const medicineCards = sortedIds.map(id => {
         const m = db.medicines[id];
         return m ? renderMedicineCard(m, query) : '';
     }).join('');
 
-    // Comma-separated number list (as text, for easy reference)
     const numsText = sortedIds.join(', ');
 
     resultsEl.innerHTML = `
         <div class="search-result-panel">
-            <p style="color:#555;font-size:0.9em">
+            <p class="result-summary">
                 Found <strong>${matchedIds.size}</strong> medicine(s) for
                 "<strong>${escHtml(query)}</strong>"
             </p>
 
             <div class="numbers-display">
-                <div class="label">Medicine Number(s):</div>
-                <div style="margin-bottom:8px">${numbersHtml}</div>
-                <div style="font-size:0.82em;color:#888">
+                <div class="label">Medicine Number(s)</div>
+                <div style="margin-bottom:10px">${numbersHtml}</div>
+                <div style="font-size:0.78em;color:var(--text-l)">
                     Numbers: <strong>${numsText}</strong>
-                    &nbsp;·&nbsp; Click a number to see full details
+                    &nbsp;·&nbsp; Click a number for details
                 </div>
             </div>
 
-            <p style="font-size:0.82em;color:#999;margin-bottom:14px">
+            <p class="matched-symptoms-info">
                 Matched symptom(s):
                 ${matchedSyms.map(s => `<em>${escHtml(s)}</em>`).join(', ')}
             </p>
@@ -627,7 +1086,7 @@ function searchByNumber() {
 
     const num = parseInt(raw, 10);
     if (isNaN(num) || num < 1) {
-        resultsEl.innerHTML = `<div class="alert alert-error">⚠️ Please enter a valid positive number.</div>`;
+        resultsEl.innerHTML = `<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Please enter a valid positive number.</div></div>`;
         return;
     }
 
@@ -669,7 +1128,7 @@ function renderAllMedicines() {
                 <div class="empty-state">
                     <div class="icon">🌿</div>
                     <p>No medicines added yet.</p>
-                    <p style="margin-top:12px">
+                    <p style="margin-top:14px">
                         <button class="btn btn-primary" onclick="switchTab('add')">
                             ➕ Add First Medicine
                         </button>
@@ -679,10 +1138,8 @@ function renderAllMedicines() {
         return;
     }
 
-    // Sort alphabetically
     medicines.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Group by first letter
     const groups = {};
     medicines.forEach(m => {
         const letter = m.name[0].toUpperCase();
@@ -691,13 +1148,12 @@ function renderAllMedicines() {
     });
 
     let html = `
-        <div class="card" style="padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
-            <span style="font-size:1.5em">📋</span>
-            <span>
-                <strong style="color:#1b5e20;font-size:1.05em">${medicines.length} Medicines</strong>
-                &nbsp;·&nbsp;
-                <span style="color:#888;font-size:0.9em">sorted A–Z</span>
-            </span>
+        <div class="all-header">
+            <div class="all-header-icon">📋</div>
+            <div class="all-header-text">
+                <strong>${medicines.length} Medicines</strong><br>
+                <span>Sorted alphabetically A–Z</span>
+            </div>
         </div>`;
 
     Object.keys(groups).sort().forEach(letter => {
@@ -723,10 +1179,8 @@ function renderMedicineCard(med, highlightQuery = '') {
                 <span class="med-number">${med.id}</span>
                 <span class="med-name">${escHtml(med.name)}</span>
             </div>
-            <div>
-                <span style="font-size:0.8em;color:#999">Symptoms: </span>
-                ${symptomsHtml}
-            </div>
+            <div class="med-symptoms-label">Symptoms</div>
+            <div>${symptomsHtml}</div>
         </div>`;
 }
 
@@ -748,11 +1202,142 @@ function switchTab(tab) {
     if (tab === 'add') updateStats();
 }
 
+/* ─────────────────────── CLOUD SYNC LAYER ───────────────────────────── */
+const SYNC_URL_KEY = 'homeopathy_sync_url';
+let _syncTimer = null;
+
+function getSyncUrl() {
+    return localStorage.getItem(SYNC_URL_KEY) || '';
+}
+
+function updateSyncStatusUI() {
+    const el  = document.getElementById('sync-status-display');
+    const inp = document.getElementById('sync-url');
+    const url = getSyncUrl();
+    if (url) {
+        el.innerHTML = `<div class="sync-status sync-connected">
+            <span class="sync-dot on"></span>
+            Connected — data auto-syncs to Google Sheets
+        </div>`;
+        if (inp) inp.value = url;
+    } else {
+        el.innerHTML = `<div class="sync-status sync-disconnected">
+            <span class="sync-dot off"></span>
+            Not connected — data is only in this browser
+        </div>`;
+        if (inp) inp.value = '';
+    }
+}
+
+function setSyncBar(on) {
+    document.getElementById('sync-bar').classList.toggle('active', on);
+}
+
+function connectCloud() {
+    const url = document.getElementById('sync-url').value.trim();
+    const alertEl = document.getElementById('sync-alert');
+    if (!url) {
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Please paste your Google Apps Script URL.</div></div>';
+        return;
+    }
+    if (!url.startsWith('https://script.google.com/')) {
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>URL must start with https://script.google.com/</div></div>';
+        return;
+    }
+    localStorage.setItem(SYNC_URL_KEY, url);
+    alertEl.innerHTML = '<div class="alert alert-success"><span class="alert-icon">✅</span><div>Connected! Now pushing data to cloud…</div></div>';
+    updateSyncStatusUI();
+    cloudPush();
+}
+
+function disconnectCloud() {
+    localStorage.removeItem(SYNC_URL_KEY);
+    document.getElementById('sync-alert').innerHTML = '<div class="alert alert-info"><span class="alert-icon">ℹ️</span><div>Disconnected. Data will only be stored locally now.</div></div>';
+    updateSyncStatusUI();
+}
+
+function cloudPush() {
+    const url = getSyncUrl();
+    const alertEl = document.getElementById('sync-alert');
+    if (!url) {
+        alertEl.innerHTML = '<div class="alert alert-warn"><span class="alert-icon">⚠️</span><div>Not connected. Enter your URL and click Connect first.</div></div>';
+        return;
+    }
+    const db = getDB();
+    setSyncBar(true);
+    alertEl.innerHTML = '<div class="alert alert-info"><span class="alert-icon"><span class="sync-spinner"></span></span><div>Pushing data to Google Sheets…</div></div>';
+
+    fetch(url + '?action=save', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(db)
+    }).then(() => {
+        setSyncBar(false);
+        alertEl.innerHTML = '<div class="alert alert-success"><span class="alert-icon">✅</span><div>Data saved to Google Sheets!</div></div>';
+        setTimeout(() => { alertEl.innerHTML = ''; }, 4000);
+    }).catch(err => {
+        setSyncBar(false);
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Push failed: ' + escHtml(err.message) + '</div></div>';
+    });
+}
+
+function cloudPull() {
+    const url = getSyncUrl();
+    const alertEl = document.getElementById('sync-alert');
+    if (!url) {
+        alertEl.innerHTML = '<div class="alert alert-warn"><span class="alert-icon">⚠️</span><div>Not connected. Enter your URL and click Connect first.</div></div>';
+        return;
+    }
+    setSyncBar(true);
+    alertEl.innerHTML = '<div class="alert alert-info"><span class="alert-icon"><span class="sync-spinner"></span></span><div>Pulling data from Google Sheets…</div></div>';
+
+    fetch(url + '?action=load')
+        .then(r => r.json())
+        .then(result => {
+            setSyncBar(false);
+            if (result.status === 'ok' && result.data) {
+                localStorage.setItem(DB_KEY, JSON.stringify(result.data));
+                updateStats();
+                alertEl.innerHTML = '<div class="alert alert-success"><span class="alert-icon">✅</span><div>Data restored from Google Sheets! (' + (result.timestamp || '') + ')</div></div>';
+            } else if (result.status === 'ok' && !result.data) {
+                alertEl.innerHTML = '<div class="alert alert-warn"><span class="alert-icon">ℹ️</span><div>Cloud is empty. Push your data first.</div></div>';
+            } else {
+                alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Error: ' + escHtml(result.message || 'Unknown') + '</div></div>';
+            }
+        })
+        .catch(err => {
+            setSyncBar(false);
+            alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Pull failed: ' + escHtml(err.message) + '</div></div>';
+        });
+}
+
+// Auto-push with debounce (waits 3 seconds after last change)
+function autoCloudPush() {
+    if (!getSyncUrl()) return;
+    if (_syncTimer) clearTimeout(_syncTimer);
+    _syncTimer = setTimeout(() => {
+        const url = getSyncUrl();
+        if (!url) return;
+        const db = getDB();
+        setSyncBar(true);
+        fetch(url + '?action=save', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(db)
+        }).then(() => { setSyncBar(false); })
+          .catch(() => { setSyncBar(false); });
+    }, 3000);
+}
+
 /* ──────────────────────── SETTINGS MODAL ───────────────────────────── */
 function openSettings() {
     document.getElementById('export-area').style.display = 'none';
     document.getElementById('import-area').style.display = 'none';
     document.getElementById('import-alert').innerHTML    = '';
+    document.getElementById('sync-alert').innerHTML      = '';
+    updateSyncStatusUI();
     document.getElementById('settings-modal').classList.add('open');
 }
 function closeSettings() {
@@ -772,7 +1357,7 @@ function copyExport() {
     const ta = document.getElementById('export-text');
     ta.select();
     document.execCommand('copy');
-    alert('✅ Copied to clipboard!');
+    alert('Copied to clipboard!');
 }
 function showImportBox() {
     document.getElementById('import-area').style.display = 'block';
@@ -785,27 +1370,26 @@ function importData() {
         const parsed = JSON.parse(raw);
         if (!parsed.medicines || !parsed.symptoms) throw new Error('Invalid format');
         localStorage.setItem(DB_KEY, raw);
-        alertEl.innerHTML = '<div class="alert alert-success">✅ Data imported successfully! Refresh the page.</div>';
+        alertEl.innerHTML = '<div class="alert alert-success"><span class="alert-icon">✅</span><div>Data imported successfully! Refresh the page.</div></div>';
         updateStats();
     } catch (e) {
-        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Invalid data. Please paste the exported JSON correctly.</div>';
+        alertEl.innerHTML = '<div class="alert alert-error"><span class="alert-icon">⚠️</span><div>Invalid data. Please paste the exported JSON correctly.</div></div>';
     }
 }
 function clearAllData() {
-    if (confirm('⚠️ This will DELETE all medicines and symptoms. Are you sure?')) {
+    if (confirm('This will DELETE all medicines and symptoms. Are you sure?')) {
         localStorage.removeItem(DB_KEY);
         updateStats();
         renderAllMedicines();
         closeSettings();
         switchTab('add');
-        alert('All data has been cleared.');
     }
 }
 
 /* ─────────────────────────── SAMPLE DATA ───────────────────────────── */
 function loadSampleData(force) {
     const db = getDB();
-    if (!force && Object.keys(db.medicines).length > 0) return; // already has data
+    if (!force && Object.keys(db.medicines).length > 0) return;
 
     if (force && Object.keys(db.medicines).length > 0) {
         if (!confirm('This will ADD sample medicines to your existing data. Continue?')) return;
@@ -861,6 +1445,25 @@ function loadSampleData(force) {
 /* ──────────────────────────── INIT ─────────────────────────────────── */
 loadSampleData(false);
 updateStats();
+
+// Auto-pull from cloud on first load if connected and local is empty
+(function autoLoadFromCloud() {
+    const url = getSyncUrl();
+    const db  = getDB();
+    if (url && Object.keys(db.medicines).length === 0) {
+        setSyncBar(true);
+        fetch(url + '?action=load')
+            .then(r => r.json())
+            .then(result => {
+                setSyncBar(false);
+                if (result.status === 'ok' && result.data) {
+                    localStorage.setItem(DB_KEY, JSON.stringify(result.data));
+                    updateStats();
+                }
+            })
+            .catch(() => { setSyncBar(false); });
+    }
+})();
 </script>
 </body>
 </html>
