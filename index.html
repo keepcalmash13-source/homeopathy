@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homeopathy Medicine Finder</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f1f8f1;
+            color: #2d4a2d;
+            min-height: 100vh;
+        }
+
+        /* ── HEADER ─────────────────────────────────────────────── */
+        header {
+            background: linear-gradient(135deg, #1b5e20, #388e3c);
+            color: white;
+            padding: 22px 24px 18px;
+            text-align: center;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+        }
+        header h1 { font-size: 1.75em; letter-spacing: 0.5px; }
+        header p  { font-size: 0.9em; opacity: 0.85; margin-top: 4px; }
+
+        .header-settings {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: background 0.2s;
+        }
+        .icon-btn:hover { background: rgba(255,255,255,0.32); }
+
+        /* ── NAV TABS ────────────────────────────────────────────── */
+        .nav-tabs {
+            display: flex;
+            background: #145214;
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-tab {
+            flex: 1;
+            padding: 13px 8px;
+            text-align: center;
+            cursor: pointer;
+            color: #a5d6a7;
+            font-size: 0.88em;
+            border-bottom: 3px solid transparent;
+            white-space: nowrap;
+            min-width: 80px;
+            transition: all 0.2s;
+        }
+        .nav-tab:hover { background: #1b5e20; color: #fff; }
+        .nav-tab.active {
+            background: #f1f8f1;
+            color: #1b5e20;
+            font-weight: 700;
+            border-bottom: 3px solid #43a047;
+        }
+
+        /* ── CONTENT ─────────────────────────────────────────────── */
+        .tab-content { display: none; padding: 24px 18px; max-width: 820px; margin: 0 auto; }
+        .tab-content.active { display: block; }
+
+        /* ── CARDS ───────────────────────────────────────────────── */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 10px rgba(0,80,0,0.09);
+        }
+        .card h2 {
+            color: #1b5e20;
+            margin-bottom: 18px;
+            font-size: 1.15em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ── FORM ELEMENTS ───────────────────────────────────────── */
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 7px;
+            color: #2e6b2e;
+            font-size: 0.93em;
+        }
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #c8e6c9;
+            border-radius: 9px;
+            font-size: 1em;
+            font-family: inherit;
+            margin-bottom: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafffe;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #43a047;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67,160,71,0.15);
+        }
+        textarea { min-height: 80px; resize: vertical; }
+        .hint {
+            font-size: 0.82em;
+            color: #999;
+            margin-top: -10px;
+            margin-bottom: 14px;
+        }
+
+        /* ── BUTTONS ─────────────────────────────────────────────── */
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 9px;
+            font-size: 0.97em;
+            font-family: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary   { background: #43a047; color: white; }
+        .btn-primary:hover   { background: #2e7d32; transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,100,0,0.25); }
+        .btn-secondary { background: #e8f5e9; color: #2e7d32; border: 2px solid #a5d6a7; }
+        .btn-secondary:hover { background: #c8e6c9; }
+        .btn-danger    { background: #ffebee; color: #c62828; border: 2px solid #ef9a9a; }
+        .btn-danger:hover { background: #ffcdd2; }
+
+        /* ── ALERTS ──────────────────────────────────────────────── */
+        .alert {
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-bottom: 16px;
+            font-size: 0.93em;
+            line-height: 1.5;
+        }
+        .alert-success { background: #e8f5e9; color: #1b5e20; border: 1.5px solid #a5d6a7; }
+        .alert-error   { background: #ffebee; color: #b71c1c; border: 1.5px solid #ef9a9a; }
+        .alert-info    { background: #e3f2fd; color: #0d47a1; border: 1.5px solid #90caf9; }
+        .alert-warn    { background: #fff8e1; color: #e65100; border: 1.5px solid #ffe082; }
+
+        /* ── STATS BAR ───────────────────────────────────────────── */
+        .stats-bar   { display: flex; gap: 14px; margin-bottom: 4px; }
+        .stat-card   {
+            flex: 1; background: white; border-radius: 12px;
+            padding: 16px 10px; text-align: center;
+            box-shadow: 0 2px 8px rgba(0,80,0,0.09);
+        }
+        .stat-card .num   { font-size: 2em; font-weight: 700; color: #2e7d32; }
+        .stat-card .slabel { font-size: 0.78em; color: #888; margin-top: 4px; }
+
+        /* ── MEDICINE RESULT CARDS ───────────────────────────────── */
+        .medicine-card {
+            background: white;
+            border: 2px solid #c8e6c9;
+            border-radius: 11px;
+            padding: 16px 18px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        .medicine-card:hover {
+            border-color: #43a047;
+            box-shadow: 0 4px 14px rgba(0,100,0,0.12);
+        }
+        .med-header   { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .med-number   {
+            display: inline-flex; align-items: center; justify-content: center;
+            background: #388e3c; color: white;
+            min-width: 38px; height: 38px; border-radius: 50%;
+            font-weight: 700; font-size: 0.95em; flex-shrink: 0;
+            padding: 0 5px;
+        }
+        .med-name     { font-size: 1.08em; font-weight: 700; color: #1b5e20; }
+        .symptom-tag  {
+            display: inline-block;
+            background: #e8f5e9; color: #2e7d32;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 0.8em; margin: 2px;
+            border: 1px solid #c8e6c9;
+        }
+        .symptom-tag.match {
+            background: #fff3e0; border-color: #ff9800;
+            color: #e65100; font-weight: 600;
+        }
+
+        /* ── SEARCH RESULT PANEL ─────────────────────────────────── */
+        .search-result-panel {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 2px 10px rgba(0,80,0,0.09);
+        }
+        .numbers-display {
+            background: #e8f5e9;
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin: 12px 0;
+            text-align: center;
+        }
+        .numbers-display .label {
+            font-size: 0.82em; color: #666; margin-bottom: 8px;
+        }
+        .num-badge {
+            display: inline-block;
+            background: #388e3c; color: white;
+            padding: 6px 16px; border-radius: 22px;
+            margin: 3px; cursor: pointer;
+            font-weight: 700; font-size: 1em;
+            transition: all 0.2s;
+        }
+        .num-badge:hover { background: #1b5e20; transform: scale(1.06); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+
+        /* ── ALL MEDICINES ───────────────────────────────────────── */
+        .alpha-letter {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 50%;
+            background: #2e7d32; color: white;
+            font-weight: 700; font-size: 1.05em;
+            margin-bottom: 10px;
+        }
+        .alpha-group { margin-bottom: 22px; }
+
+        /* ── EMPTY STATE ─────────────────────────────────────────── */
+        .empty-state {
+            text-align: center; padding: 40px 20px; color: #aaa;
+        }
+        .empty-state .icon { font-size: 3em; margin-bottom: 10px; }
+        .empty-state p { margin-bottom: 6px; }
+
+        /* ── SETTINGS MODAL ──────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: white; border-radius: 16px;
+            padding: 28px; max-width: 560px; width: 92%;
+            max-height: 80vh; overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        .modal-box h3 { color: #1b5e20; margin-bottom: 18px; font-size: 1.1em; }
+        .modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+        .data-textarea {
+            width: 100%; height: 160px; font-size: 0.82em;
+            font-family: 'Courier New', monospace;
+            border: 2px solid #c8e6c9; border-radius: 8px; padding: 10px;
+            resize: vertical;
+        }
+
+        /* ── DIVIDER ─────────────────────────────────────────────── */
+        hr.divider {
+            border: none; border-top: 1px solid #e8f5e9; margin: 16px 0;
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────────────────── */
+        @media (max-width: 540px) {
+            .stats-bar { gap: 8px; }
+            .stat-card { padding: 12px 6px; }
+            .stat-card .num { font-size: 1.6em; }
+            header h1 { font-size: 1.4em; }
+            .header-settings { top: 14px; right: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HEADER ══════════════════════════════ -->
+<header style="position:relative;">
+    <h1>🌿 Homeopathy Medicine Finder</h1>
+    <p>Your personal homeopathy reference guide</p>
+    <div class="header-settings">
+        <button class="icon-btn" onclick="openSettings()">⚙️ Settings</button>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════ NAV ══════════════════════════════════ -->
+<div class="nav-tabs" id="nav-tabs">
+    <div class="nav-tab active"  onclick="switchTab('add')">➕ Add Medicine</div>
+    <div class="nav-tab"         onclick="switchTab('symptom')">🔍 Find by Symptom</div>
+    <div class="nav-tab"         onclick="switchTab('number')">💊 Find by Number</div>
+    <div class="nav-tab"         onclick="switchTab('all')">📋 All Medicines</div>
+</div>
+
+<!-- ════════════════════════ TAB 1 — ADD MEDICINE ════════════════════════ -->
+<div id="tab-add" class="tab-content active">
+
+    <div class="stats-bar" id="stats-bar"></div>
+
+    <div class="card">
+        <h2>➕ Add / Update Medicine</h2>
+
+        <div id="add-alert"></div>
+
+        <label for="med-name">Medicine Name</label>
+        <input type="text" id="med-name"
+               placeholder="e.g. Arnica Montana"
+               oninput="onMedicineNameInput()" />
+        <div id="existing-info"></div>
+
+        <label for="med-symptoms">Symptoms <span style="font-weight:400;color:#aaa">(comma-separated)</span></label>
+        <textarea id="med-symptoms"
+                  placeholder="e.g. bruises, muscle pain, swelling, trauma, shock"></textarea>
+        <div class="hint">💡 Separate symptoms with commas. If the medicine already exists, new symptoms will be added to it.</div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="btn btn-primary"   onclick="addMedicine()">💾 Save Medicine</button>
+            <button class="btn btn-secondary" onclick="clearForm()">🗑️ Clear</button>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════════════════ TAB 2 — FIND BY SYMPTOM ═════════════════════ -->
+<div id="tab-symptom" class="tab-content">
+    <div class="card">
+        <h2>🔍 Search by Symptom</h2>
+        <label for="symptom-input">Enter Symptom Name</label>
+        <input type="text" id="symptom-input"
+               placeholder="e.g. fever, headache, cough, rash…"
+               oninput="searchBySymptom()" />
+        <div class="hint">💡 You can type part of a symptom name — partial matches are shown.</div>
+    </div>
+    <div id="symptom-results"></div>
+</div>
+
+<!-- ════════════════════════ TAB 3 — FIND BY NUMBER ══════════════════════ -->
+<div id="tab-number" class="tab-content">
+    <div class="card">
+        <h2>💊 Find Medicine by Number</h2>
+        <label for="number-input">Enter Medicine Number</label>
+        <input type="text" id="number-input"
+               placeholder="e.g. 1, 2, 3…"
+               oninput="searchByNumber()" />
+        <div class="hint">💡 Enter the medicine number shown in symptom search results.</div>
+    </div>
+    <div id="number-results"></div>
+</div>
+
+<!-- ════════════════════════ TAB 4 — ALL MEDICINES ═══════════════════════ -->
+<div id="tab-all" class="tab-content">
+    <div id="all-medicines-list"></div>
+</div>
+
+<!-- ════════════════════════ SETTINGS MODAL ══════════════════════════════ -->
+<div class="modal-overlay" id="settings-modal" onclick="onModalOverlayClick(event)">
+    <div class="modal-box">
+        <h3>⚙️ Settings & Data Management</h3>
+
+        <div class="modal-actions">
+            <button class="btn btn-secondary" onclick="exportData()">📤 Export Data</button>
+            <button class="btn btn-secondary" onclick="showImportBox()">📥 Import Data</button>
+            <button class="btn btn-danger"    onclick="clearAllData()">🗑️ Clear All Data</button>
+            <button class="btn btn-secondary" onclick="loadSampleData(true)">🔄 Load Sample Data</button>
+        </div>
+
+        <div id="export-area" style="display:none">
+            <label>Your data (copy and save this somewhere safe):</label>
+            <textarea class="data-textarea" id="export-text" readonly></textarea>
+            <button class="btn btn-secondary" style="margin-top:8px"
+                    onclick="copyExport()">📋 Copy to Clipboard</button>
+        </div>
+
+        <div id="import-area" style="display:none;margin-top:14px">
+            <label>Paste previously exported data here:</label>
+            <textarea class="data-textarea" id="import-text"
+                      placeholder="Paste your exported JSON here…"></textarea>
+            <button class="btn btn-primary" style="margin-top:8px"
+                    onclick="importData()">✅ Import</button>
+            <div id="import-alert" style="margin-top:10px"></div>
+        </div>
+
+        <hr class="divider">
+        <button class="btn btn-secondary" onclick="closeSettings()">✖️ Close</button>
+    </div>
+</div>
+
+<!-- ════════════════════════════ SCRIPT ══════════════════════════════════ -->
+<script>
+/* ─────────────────────────── DATA LAYER ──────────────────────────────── */
+const DB_KEY = 'homeopathy_db_v1';
+
+function getDB() {
+    try {
+        const raw = localStorage.getItem(DB_KEY);
+        if (!raw) return { medicines: {}, symptoms: {}, nextId: 1 };
+        return JSON.parse(raw);
+    } catch (e) {
+        return { medicines: {}, symptoms: {}, nextId: 1 };
+    }
+}
+
+function saveDB(db) {
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+}
+
+function findMedicineByName(db, name) {
+    return Object.values(db.medicines)
+        .find(m => m.name.trim().toLowerCase() === name.trim().toLowerCase());
+}
+
+/* ─────────────────────── ADD MEDICINE TAB ────────────────────────────── */
+function onMedicineNameInput() {
+    const name     = document.getElementById('med-name').value.trim();
+    const infoBox  = document.getElementById('existing-info');
+    if (!name) { infoBox.innerHTML = ''; return; }
+
+    const db  = getDB();
+    const med = findMedicineByName(db, name);
+    if (med) {
+        infoBox.innerHTML = `
+            <div class="alert alert-info" style="margin-bottom:14px">
+                ℹ️ <strong>${escHtml(med.name)}</strong> already exists as
+                <strong>Medicine No. ${med.id}</strong>.
+                New symptoms you enter will be <em>added</em> to it.<br>
+                <small style="color:#555">Current symptoms:
+                    ${med.symptoms.map(s => `<em>${escHtml(s)}</em>`).join(', ')}
+                </small>
+            </div>`;
+    } else {
+        infoBox.innerHTML = '';
+    }
+}
+
+function addMedicine() {
+    const nameEl  = document.getElementById('med-name');
+    const symEl   = document.getElementById('med-symptoms');
+    const alertEl = document.getElementById('add-alert');
+
+    const name = nameEl.value.trim();
+    const raw  = symEl.value.trim();
+
+    if (!name) {
+        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Please enter a medicine name.</div>';
+        nameEl.focus();
+        return;
+    }
+    if (!raw) {
+        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Please enter at least one symptom.</div>';
+        symEl.focus();
+        return;
+    }
+
+    const symptoms = raw.split(',')
+        .map(s => s.trim().toLowerCase())
+        .filter(s => s.length > 0);
+
+    if (symptoms.length === 0) {
+        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Could not read any valid symptoms.</div>';
+        return;
+    }
+
+    const db  = getDB();
+    const med = findMedicineByName(db, name);
+    let medicineId, isNew = false, added = [];
+
+    if (med) {
+        medicineId = med.id;
+        symptoms.forEach(s => {
+            if (!med.symptoms.includes(s)) {
+                med.symptoms.push(s);
+                added.push(s);
+            }
+        });
+        db.medicines[medicineId] = med;
+    } else {
+        medicineId = db.nextId++;
+        isNew      = true;
+        added      = symptoms;
+        db.medicines[medicineId] = { id: medicineId, name: name.trim(), symptoms };
+    }
+
+    // Update reverse symptom → medicine map
+    symptoms.forEach(s => {
+        if (!db.symptoms[s]) db.symptoms[s] = [];
+        if (!db.symptoms[s].includes(medicineId)) db.symptoms[s].push(medicineId);
+    });
+
+    saveDB(db);
+    clearForm();
+
+    if (isNew) {
+        alertEl.innerHTML = `
+            <div class="alert alert-success">
+                ✅ <strong>${escHtml(name)}</strong> saved as
+                <strong>Medicine No. ${medicineId}</strong>
+                with ${symptoms.length} symptom(s).
+            </div>`;
+    } else if (added.length > 0) {
+        alertEl.innerHTML = `
+            <div class="alert alert-success">
+                ✅ Added <strong>${added.length}</strong> new symptom(s) to
+                <strong>${escHtml(med.name)}</strong> (No. ${medicineId}).
+            </div>`;
+    } else {
+        alertEl.innerHTML = `
+            <div class="alert alert-warn">
+                ℹ️ All entered symptoms were already mapped to
+                <strong>${escHtml(med.name)}</strong> (No. ${medicineId}).
+                Nothing new was added.
+            </div>`;
+    }
+
+    updateStats();
+    setTimeout(() => { alertEl.innerHTML = ''; }, 5000);
+}
+
+function clearForm() {
+    document.getElementById('med-name').value     = '';
+    document.getElementById('med-symptoms').value = '';
+    document.getElementById('existing-info').innerHTML = '';
+}
+
+function updateStats() {
+    const db = getDB();
+    const totalMed = Object.keys(db.medicines).length;
+    const totalSym = Object.keys(db.symptoms).length;
+    document.getElementById('stats-bar').innerHTML = `
+        <div class="stat-card">
+            <div class="num">${totalMed}</div>
+            <div class="slabel">Medicines</div>
+        </div>
+        <div class="stat-card">
+            <div class="num">${totalSym}</div>
+            <div class="slabel">Symptoms Mapped</div>
+        </div>
+        <div class="stat-card">
+            <div class="num">${db.nextId - 1}</div>
+            <div class="slabel">Last Medicine No.</div>
+        </div>`;
+}
+
+/* ──────────────────────── SEARCH BY SYMPTOM ──────────────────────────── */
+function searchBySymptom() {
+    const query     = document.getElementById('symptom-input').value.trim().toLowerCase();
+    const resultsEl = document.getElementById('symptom-results');
+    if (!query || query.length < 2) { resultsEl.innerHTML = ''; return; }
+
+    const db           = getDB();
+    const matchedIds   = new Set();
+    const matchedSyms  = [];
+
+    Object.keys(db.symptoms).forEach(sym => {
+        if (sym.includes(query)) {
+            matchedSyms.push(sym);
+            db.symptoms[sym].forEach(id => matchedIds.add(id));
+        }
+    });
+
+    if (matchedIds.size === 0) {
+        resultsEl.innerHTML = `
+            <div class="search-result-panel">
+                <div class="empty-state">
+                    <div class="icon">🔍</div>
+                    <p>No medicines found for <strong>"${escHtml(query)}"</strong></p>
+                    <p style="font-size:0.85em">Try a shorter or different keyword</p>
+                </div>
+            </div>`;
+        return;
+    }
+
+    const sortedIds       = Array.from(matchedIds).sort((a, b) => a - b);
+    const numbersHtml     = sortedIds.map(id =>
+        `<span class="num-badge" onclick="goToNumber(${id})" title="Click to see details">No. ${id}</span>`
+    ).join('');
+    const medicineCards   = sortedIds.map(id => {
+        const m = db.medicines[id];
+        return m ? renderMedicineCard(m, query) : '';
+    }).join('');
+
+    // Comma-separated number list (as text, for easy reference)
+    const numsText = sortedIds.join(', ');
+
+    resultsEl.innerHTML = `
+        <div class="search-result-panel">
+            <p style="color:#555;font-size:0.9em">
+                Found <strong>${matchedIds.size}</strong> medicine(s) for
+                "<strong>${escHtml(query)}</strong>"
+            </p>
+
+            <div class="numbers-display">
+                <div class="label">Medicine Number(s):</div>
+                <div style="margin-bottom:8px">${numbersHtml}</div>
+                <div style="font-size:0.82em;color:#888">
+                    Numbers: <strong>${numsText}</strong>
+                    &nbsp;·&nbsp; Click a number to see full details
+                </div>
+            </div>
+
+            <p style="font-size:0.82em;color:#999;margin-bottom:14px">
+                Matched symptom(s):
+                ${matchedSyms.map(s => `<em>${escHtml(s)}</em>`).join(', ')}
+            </p>
+            <hr class="divider">
+            ${medicineCards}
+        </div>`;
+}
+
+/* ───────────────────────── FIND BY NUMBER ───────────────────────────── */
+function searchByNumber() {
+    const raw       = document.getElementById('number-input').value.trim();
+    const resultsEl = document.getElementById('number-results');
+    if (!raw) { resultsEl.innerHTML = ''; return; }
+
+    const num = parseInt(raw, 10);
+    if (isNaN(num) || num < 1) {
+        resultsEl.innerHTML = `<div class="alert alert-error">⚠️ Please enter a valid positive number.</div>`;
+        return;
+    }
+
+    const db  = getDB();
+    const med = db.medicines[num];
+
+    if (!med) {
+        resultsEl.innerHTML = `
+            <div class="search-result-panel">
+                <div class="empty-state">
+                    <div class="icon">💊</div>
+                    <p>No medicine found with number <strong>${num}</strong></p>
+                </div>
+            </div>`;
+        return;
+    }
+
+    resultsEl.innerHTML = `
+        <div class="search-result-panel">
+            ${renderMedicineCard(med)}
+        </div>`;
+}
+
+function goToNumber(id) {
+    switchTab('number');
+    document.getElementById('number-input').value = id;
+    searchByNumber();
+}
+
+/* ──────────────────────── ALL MEDICINES TAB ─────────────────────────── */
+function renderAllMedicines() {
+    const db       = getDB();
+    const listEl   = document.getElementById('all-medicines-list');
+    const medicines = Object.values(db.medicines);
+
+    if (medicines.length === 0) {
+        listEl.innerHTML = `
+            <div class="card">
+                <div class="empty-state">
+                    <div class="icon">🌿</div>
+                    <p>No medicines added yet.</p>
+                    <p style="margin-top:12px">
+                        <button class="btn btn-primary" onclick="switchTab('add')">
+                            ➕ Add First Medicine
+                        </button>
+                    </p>
+                </div>
+            </div>`;
+        return;
+    }
+
+    // Sort alphabetically
+    medicines.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Group by first letter
+    const groups = {};
+    medicines.forEach(m => {
+        const letter = m.name[0].toUpperCase();
+        if (!groups[letter]) groups[letter] = [];
+        groups[letter].push(m);
+    });
+
+    let html = `
+        <div class="card" style="padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;gap:12px;">
+            <span style="font-size:1.5em">📋</span>
+            <span>
+                <strong style="color:#1b5e20;font-size:1.05em">${medicines.length} Medicines</strong>
+                &nbsp;·&nbsp;
+                <span style="color:#888;font-size:0.9em">sorted A–Z</span>
+            </span>
+        </div>`;
+
+    Object.keys(groups).sort().forEach(letter => {
+        html += `<div class="alpha-group">
+            <div class="alpha-letter">${letter}</div>
+            ${groups[letter].map(m => renderMedicineCard(m)).join('')}
+        </div>`;
+    });
+
+    listEl.innerHTML = html;
+}
+
+/* ────────────────────────── HELPERS ────────────────────────────────── */
+function renderMedicineCard(med, highlightQuery = '') {
+    const symptomsHtml = med.symptoms.map(s => {
+        const isMatch = highlightQuery && s.includes(highlightQuery.toLowerCase());
+        return `<span class="symptom-tag${isMatch ? ' match' : ''}">${escHtml(s)}</span>`;
+    }).join('');
+
+    return `
+        <div class="medicine-card">
+            <div class="med-header">
+                <span class="med-number">${med.id}</span>
+                <span class="med-name">${escHtml(med.name)}</span>
+            </div>
+            <div>
+                <span style="font-size:0.8em;color:#999">Symptoms: </span>
+                ${symptomsHtml}
+            </div>
+        </div>`;
+}
+
+function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+}
+
+/* ──────────────────────── TAB SWITCHING ────────────────────────────── */
+function switchTab(tab) {
+    const tabs   = ['add', 'symptom', 'number', 'all'];
+    const navEls = document.querySelectorAll('.nav-tab');
+    tabs.forEach((t, i) => {
+        navEls[i].classList.toggle('active', t === tab);
+        document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    });
+    if (tab === 'all') renderAllMedicines();
+    if (tab === 'add') updateStats();
+}
+
+/* ──────────────────────── SETTINGS MODAL ───────────────────────────── */
+function openSettings() {
+    document.getElementById('export-area').style.display = 'none';
+    document.getElementById('import-area').style.display = 'none';
+    document.getElementById('import-alert').innerHTML    = '';
+    document.getElementById('settings-modal').classList.add('open');
+}
+function closeSettings() {
+    document.getElementById('settings-modal').classList.remove('open');
+}
+function onModalOverlayClick(e) {
+    if (e.target === document.getElementById('settings-modal')) closeSettings();
+}
+
+function exportData() {
+    const data = localStorage.getItem(DB_KEY) || '{}';
+    document.getElementById('export-text').value         = data;
+    document.getElementById('export-area').style.display = 'block';
+    document.getElementById('import-area').style.display = 'none';
+}
+function copyExport() {
+    const ta = document.getElementById('export-text');
+    ta.select();
+    document.execCommand('copy');
+    alert('✅ Copied to clipboard!');
+}
+function showImportBox() {
+    document.getElementById('import-area').style.display = 'block';
+    document.getElementById('export-area').style.display = 'none';
+}
+function importData() {
+    const raw     = document.getElementById('import-text').value.trim();
+    const alertEl = document.getElementById('import-alert');
+    try {
+        const parsed = JSON.parse(raw);
+        if (!parsed.medicines || !parsed.symptoms) throw new Error('Invalid format');
+        localStorage.setItem(DB_KEY, raw);
+        alertEl.innerHTML = '<div class="alert alert-success">✅ Data imported successfully! Refresh the page.</div>';
+        updateStats();
+    } catch (e) {
+        alertEl.innerHTML = '<div class="alert alert-error">⚠️ Invalid data. Please paste the exported JSON correctly.</div>';
+    }
+}
+function clearAllData() {
+    if (confirm('⚠️ This will DELETE all medicines and symptoms. Are you sure?')) {
+        localStorage.removeItem(DB_KEY);
+        updateStats();
+        renderAllMedicines();
+        closeSettings();
+        switchTab('add');
+        alert('All data has been cleared.');
+    }
+}
+
+/* ─────────────────────────── SAMPLE DATA ───────────────────────────── */
+function loadSampleData(force) {
+    const db = getDB();
+    if (!force && Object.keys(db.medicines).length > 0) return; // already has data
+
+    if (force && Object.keys(db.medicines).length > 0) {
+        if (!confirm('This will ADD sample medicines to your existing data. Continue?')) return;
+    }
+
+    const samples = [
+        { name: 'Arnica Montana',       symptoms: ['bruises', 'muscle soreness', 'trauma', 'sprains', 'shock', 'overexertion'] },
+        { name: 'Belladonna',           symptoms: ['high fever', 'throbbing headache', 'redness', 'inflammation', 'sore throat', 'dilated pupils'] },
+        { name: 'Calendula',            symptoms: ['wounds', 'cuts', 'skin healing', 'ulcers', 'minor burns', 'abrasions'] },
+        { name: 'Chamomilla',           symptoms: ['teething pain', 'irritability', 'earache', 'colic', 'insomnia in children'] },
+        { name: 'Gelsemium',            symptoms: ['flu', 'weakness', 'trembling', 'pre-exam anxiety', 'drowsiness', 'heavy eyelids'] },
+        { name: 'Nux Vomica',           symptoms: ['indigestion', 'hangover', 'irritability', 'constipation', 'nausea', 'oversensitivity to noise'] },
+        { name: 'Rhus Toxicodendron',   symptoms: ['joint stiffness', 'skin rash', 'restlessness', 'cold sores', 'worse after rest'] },
+        { name: 'Sulphur',              symptoms: ['skin conditions', 'burning sensations', 'itching', 'acne', 'eczema', 'redness'] },
+        { name: 'Aconite',              symptoms: ['sudden fever', 'fear', 'anxiety', 'panic attacks', 'cold and flu onset'] },
+        { name: 'Apis Mellifica',       symptoms: ['bee sting', 'swelling', 'hives', 'burning and stinging pain', 'puffy eyelids'] },
+        { name: 'Bryonia',              symptoms: ['dry cough', 'constipation', 'headache worse on motion', 'joint pain', 'irritability'] },
+        { name: 'Calcarea Carbonica',   symptoms: ['fatigue', 'overweight tendency', 'anxiety', 'cold sweaty hands', 'slow metabolism'] },
+        { name: 'Ignatia',              symptoms: ['grief', 'emotional shock', 'sighing', 'mood swings', 'headache from emotions'] },
+        { name: 'Lycopodium',           symptoms: ['bloating', 'digestive issues', 'low confidence', 'hair loss', 'stage fright'] },
+        { name: 'Pulsatilla',           symptoms: ['weeping', 'clingy behaviour', 'sinusitis', 'ear infection', 'thick yellow discharge'] },
+    ];
+
+    const freshDb = force ? db : { medicines: {}, symptoms: {}, nextId: 1 };
+
+    samples.forEach(s => {
+        const existing = findMedicineByName(freshDb, s.name);
+        let id;
+        if (existing) {
+            id = existing.id;
+            s.symptoms.forEach(sym => {
+                if (!existing.symptoms.includes(sym)) existing.symptoms.push(sym);
+            });
+            freshDb.medicines[id] = existing;
+        } else {
+            id = freshDb.nextId++;
+            freshDb.medicines[id] = { id, name: s.name, symptoms: s.symptoms };
+        }
+        s.symptoms.forEach(sym => {
+            if (!freshDb.symptoms[sym]) freshDb.symptoms[sym] = [];
+            if (!freshDb.symptoms[sym].includes(id)) freshDb.symptoms[sym].push(id);
+        });
+    });
+
+    saveDB(freshDb);
+    updateStats();
+    if (force) {
+        closeSettings();
+        switchTab('all');
+    }
+}
+
+/* ──────────────────────────── INIT ─────────────────────────────────── */
+loadSampleData(false);
+updateStats();
+</script>
+</body>
+</html>
